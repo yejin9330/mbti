@@ -291,7 +291,7 @@ mbti_flowers = {
         "bg_color": "#ffebee"
     },
     "ESFJ": {
-        "flower": "해바라기 🌻💛",
+        "flower": "미모사 🌼💛",
         "emoji": "🌻💛🤝",
         "name": "미모사 (Mimosa)",
         "keywords": ["사교적인", "배려심 깊은", "협동적", "따뜻한"],
@@ -300,7 +300,7 @@ mbti_flowers = {
             "사람들과의 관계를 소중히 여기고 언제나 따뜻한 미소로 주변을 행복하게 만드는 당신. "
             "사교적이고 배려심 깊은 당신에게 밝고 따뜻한 미모사를 선물해요! 💛"
         ),
-        "fun_fact": "💡 재미있는 사실: 미모사는 '섬세한 감정', '우정'을 의미해요! "
+        "fun_fact": "💡 재미있는 사실: 미모사는 섬세한 감정, 우정을 의미해요! "
                    "인간관계를 소중히 여기는 ESFJ에게 이보다 어울리는 꽃이 있을까요? 🤝",
         "color": "#f9a825",
         "bg_color": "#fffde7"
@@ -332,7 +332,7 @@ mbti_flowers = {
             "조용하지만 독자적인 예술 감각으로 세상을 아름답게 만드는 당신, "
             "바로 봄의 주인공이에요! 🌸"
         ),
-        "fun_fact": "💡 재미있는 사실: 벚꽃이 피는 기간은 고작 1-2주에 불과해요! "
+        "fun_fact": "💡 재미있는 사실: 벚꽃이 피는 기간은 고작 1~2주에 불과해요! "
                    "그 짧은 순간이기에 더욱 아름다운 것처럼, 현재를 사는 ISFP와 완벽 매칭! ✨",
         "color": "#e91e63",
         "bg_color": "#fce4ec"
@@ -371,6 +371,33 @@ mbti_flowers = {
     },
 }
 
+
+# ✅ 핵심 수정 함수: 키워드 HTML을 f-string 밖에서 미리 만들기!
+def make_keyword_html(keywords):
+    spans = ""
+    for kw in keywords:
+        spans += f'<span class="keyword">#{kw}</span>'
+    return f'<div class="keyword-box">{spans}</div>'
+
+
+def make_preview_card(emoji, mbti, flower, bg_color, color):
+    first_emoji = emoji.split()[0]
+    return f"""
+        <div style='
+            background: {bg_color};
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            margin: 5px 0;
+            border: 1px solid #eee;
+        '>
+            <div style='font-size: 24px;'>{first_emoji}</div>
+            <div style='font-weight: bold; color: {color}; font-size: 14px;'>{mbti}</div>
+            <div style='font-size: 12px; color: #888;'>{flower}</div>
+        </div>
+    """
+
+
 # 메인 앱
 def main():
     # 타이틀
@@ -389,13 +416,22 @@ def main():
     col1, col2, col3 = st.columns(3)
     with col1:
         st.markdown("### 🌺 16가지 꽃")
-        st.markdown("<p style='text-align:center; color:#888;'>각 MBTI에 딱 맞는 특별한 꽃이 있어요!</p>", unsafe_allow_html=True)
+        st.markdown(
+            "<p style='text-align:center; color:#888;'>각 MBTI에 딱 맞는 특별한 꽃이 있어요!</p>",
+            unsafe_allow_html=True
+        )
     with col2:
         st.markdown("### 🔍 꽃말 분석")
-        st.markdown("<p style='text-align:center; color:#888;'>꽃말과 성격을 연결해드려요!</p>", unsafe_allow_html=True)
+        st.markdown(
+            "<p style='text-align:center; color:#888;'>꽃말과 성격을 연결해드려요!</p>",
+            unsafe_allow_html=True
+        )
     with col3:
         st.markdown("### 💡 재미있는 사실")
-        st.markdown("<p style='text-align:center; color:#888;'>꽃에 관한 신기한 이야기도 있어요!</p>", unsafe_allow_html=True)
+        st.markdown(
+            "<p style='text-align:center; color:#888;'>꽃에 관한 신기한 이야기도 있어요!</p>",
+            unsafe_allow_html=True
+        )
 
     st.markdown("---")
 
@@ -404,11 +440,6 @@ def main():
 
     mbti_list = list(mbti_flowers.keys())
 
-    # 4x4 그리드로 버튼 표시
-    cols = st.columns(4)
-    selected_mbti = None
-
-    # selectbox로 선택
     selected_mbti = st.selectbox(
         "MBTI 유형을 선택하세요 👇",
         ["선택해주세요 💭"] + mbti_list,
@@ -421,35 +452,32 @@ def main():
     if selected_mbti and selected_mbti != "선택해주세요 💭":
         data = mbti_flowers[selected_mbti]
 
-        # 풍선 효과
         if st.button("✨ 꽃 추천 받기! ✨"):
             st.balloons()
 
+        # ✅ 키워드 HTML을 함수로 미리 생성
+        keyword_html = make_keyword_html(data["keywords"])
+
+        # ✅ f-string 안에서 따옴표 충돌 없이 변수로 삽입
         st.markdown(f"""
             <div class="result-box">
                 <div class="flower-emoji">{data['emoji']}</div>
                 <div class="mbti-badge">✨ {selected_mbti} ✨</div>
                 <div class="flower-name">🌸 {data['name']} 🌸</div>
-                
-                <div class="keyword-box">
-                    {"".join([f'<span class="keyword">#{kw}</span>' for kw in data["keywords"]])}
-                </div>
-                
+                {keyword_html}
                 <div class="flower-desc">{data['description']}</div>
-                
                 <div class="fun-fact">{data['fun_fact']}</div>
             </div>
         """, unsafe_allow_html=True)
 
         st.markdown("")
-        st.markdown(f"""
-            <p style='text-align:center; color:#aaa; font-size:14px;'>
-                🌸 친구에게 공유하고 친구의 꽃도 알아보세요! 🌸
-            </p>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            "<p style='text-align:center; color:#aaa; font-size:14px;'>"
+            "🌸 친구에게 공유하고 친구의 꽃도 알아보세요! 🌸</p>",
+            unsafe_allow_html=True
+        )
 
     else:
-        # 선택 전 안내
         st.markdown("""
             <div style='text-align:center; padding: 40px; color: #ccc;'>
                 <div style='font-size: 60px;'>💐</div>
@@ -457,27 +485,21 @@ def main():
             </div>
         """, unsafe_allow_html=True)
 
-    # 하단 모든 MBTI 미리보기
+    # 하단 전체 MBTI 미리보기
     st.markdown("---")
     st.markdown("### 🌺 모든 MBTI 꽃 미리보기")
-    
+
     preview_cols = st.columns(4)
     for i, (mbti, data) in enumerate(mbti_flowers.items()):
         with preview_cols[i % 4]:
-            st.markdown(f"""
-                <div style='
-                    background: {data["bg_color"]};
-                    border-radius: 15px;
-                    padding: 15px;
-                    text-align: center;
-                    margin: 5px 0;
-                    border: 1px solid #eee;
-                '>
-                    <div style='font-size: 24px;'>{data["emoji"].split()[0]}</div>
-                    <div style='font-weight: bold; color: {data["color"]}; font-size: 14px;'>{mbti}</div>
-                    <div style='font-size: 12px; color: #888;'>{data["flower"]}</div>
-                </div>
-            """, unsafe_allow_html=True)
+            card_html = make_preview_card(
+                data["emoji"],
+                mbti,
+                data["flower"],
+                data["bg_color"],
+                data["color"]
+            )
+            st.markdown(card_html, unsafe_allow_html=True)
 
     # 푸터
     st.markdown("")
